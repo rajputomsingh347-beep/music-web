@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Simple Music Player</title>
+    <style>
+        /* --- CSS STYLE --- */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .player-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 320px;
+        }
+
+        h2 { margin-bottom: 5px; font-size: 24px; }
+        h3 { margin-top: 0; font-weight: 300; color: #777; font-size: 18px; }
+
+        .img-container {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Progress Bar Design */
+        .progress-container {
+            background: #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 25px 0;
+            height: 8px;
+            width: 100%;
+        }
+
+        .progress {
+            background-color: #764ba2;
+            border-radius: 10px;
+            height: 100%;
+            width: 0%; /* JS update karega */
+            transition: width 0.1s linear;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 35px;
+            color: #444;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            color: #000;
+        }
+
+        #play {
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="player-container">
+        <h2 id="title">Song Title</h2>
+        <h3 id="artist">Artist Name</h3>
+        
+        <div class="img-container">
+            <img src="https://via.placeholder.com/200" alt="Album Art" id="cover">
+        </div>
+
+        <audio src="song.mp3" id="music"></audio>
+
+        <div class="progress-container" id="progress-container">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <div class="controls">
+            <button id="prev" title="Previous">⏮</button>
+            <button id="play" title="Play">▶️</button>
+            <button id="next" title="Next">⏭</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+        const music = document.getElementById('music');
+        const playBtn = document.getElementById('play');
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+        const progress = document.getElementById('progress');
+        const progressContainer = document.getElementById('progress-container');
+
+        let isPlaying = false;
+
+        // Function: Gaana chalane ke liye
+        function playSong() {
+            isPlaying = true;
+            playBtn.textContent = '⏸'; // Pause icon
+            music.play();
+        }
+
+        // Function: Gaana rokne ke liye
+        function pauseSong() {
+            isPlaying = false;
+            playBtn.textContent = '▶️'; // Play icon
+            music.pause();
+        }
+
+        // Play ya Pause button click event
+        playBtn.addEventListener('click', () => (isPlaying ? pauseSong() : playSong()));
+
+        // Progress Bar ko music ke saath update karna
+        function updateProgressBar(e) {
+            if (isPlaying) {
+                const { duration, currentTime } = e.srcElement;
+                const progressPercent = (currentTime / duration) * 100;
+                progress.style.width = `${progressPercent}%`;
+            }
+        }
+
+        // Progress bar par click karke gaana aage-piche karna
+        function setProgressBar(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const { duration } = music;
+            music.currentTime = (clickX / width) * duration;
+        }
+
+        // Event Listeners
+        music.addEventListener('timeupdate', updateProgressBar);
+        progressContainer.addEventListener('click', setProgressBar);
+
+        // Gaana khatam hone par play button reset karna
+        music.addEventListener('ended', pauseSong);
+    </script>
+</body>
+</html>
